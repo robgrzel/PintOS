@@ -19,9 +19,8 @@ RUN yum install -y gdb
 RUN ln -sf /bin/bash /bin/sh
 RUN useradd -ms /bin/bash pintos
 
-RUN git clone https://github.com/robgrzel/PintOS/ /tmp
-RUN mv -R /tmp/PintOS /home/pintos
- 
+RUN git clone https://github.com/robgrzel/PintOS/archive/master.zip /home/pintos
+
 
 ENV setup_dir /home/pintos/setup
 ENV pintos_dir /home/pintos

@@ -1,8 +1,8 @@
 FROM centos:6.6
 MAINTAINER Robert Grzelka <robert.grzelka@outlook.com>
 
-RUN yum install -y compat-gcc-34
-RUN yum install -y compat-gcc-34-c++
+RUN yum install -y compat-gcc
+RUN yum install -y compat-gcc-c++
 RUN yum install -y tar patch
 RUN yum install -y ncurses-devel ncurses
 RUN yum install -y git

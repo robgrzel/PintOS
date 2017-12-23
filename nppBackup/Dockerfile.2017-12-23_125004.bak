@@ -1,4 +1,4 @@
-FROM centos:6.6
+FROM centos:7
 MAINTAINER Robert Grzelka <robert.grzelka@outlook.com>
 
 RUN yum install -y compat-gcc-34
