@@ -26,9 +26,11 @@ RUN mkdir -p $setup_dir
 
 RUN echo "######################### COPY GIT PINTOS TO USER #########################"
 
-RUN git clone https://github.com/robgrzel/PintOS /tmp/pintos
+RUN git clone https://github.com/robgrzel/PintOS /tmp/$pintos_dir
 
-RUN mv /tmp/pintos/* /pintos
+RUN mv /tmp/pintos/* $pintos_dir
+
+RUN ls -la $pintos_dir
 
 WORKDIR $setup_dir
 
