@@ -1,5 +1,5 @@
 FROM centos:6.6
-MAINTAINER Robert Grzelka <robert.grzelka@outlook.com>
+MAINTAINER Robert Grzelka 
 
 RUN yum install -y compat-gcc-34
 RUN yum install -y compat-gcc-34-c++
