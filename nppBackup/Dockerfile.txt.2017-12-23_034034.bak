@@ -5,7 +5,6 @@ RUN yum install -y compat-gcc-34
 RUN yum install -y compat-gcc-34-c++
 RUN yum install -y tar patch
 RUN yum install -y ncurses-devel ncurses
-RUN yum install -y git
 
 RUN ln /usr/bin/gcc34 /usr/bin/gcc
 RUN ln /usr/bin/g++34 /usr/bin/g++
@@ -16,13 +15,7 @@ RUN cp -r /usr/lib/x86_64-redhat-linux5E/include/* /usr/local/include/
 RUN yum install -y perl
 RUN yum install -y gdb
 
-RUN ln -sf /bin/bash /bin/sh
-RUN useradd -ms /bin/bash pintos
-
-RUN git clone https://github.com/robgrzel/PintOS/archive/master.zip /home/pintos
-
-
-ENV setup_dir /home/pintos/setup
+ENV setup_dir /setup
 ENV pintos_dir /home/pintos
 
 
