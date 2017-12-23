@@ -47,4 +47,6 @@ RUN make
 
 WORKDIR $pintos_dir
 
+
+
 env PATH $setup_dir/pintos-utils/:$PATH
