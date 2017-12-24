@@ -42,7 +42,7 @@ WORKDIR $setup_dir
 
 ADD pintos-misc $setup_dir/pintos/src/misc/
 ADD pintos-utils $setup_dir/pintos-utils/
-ADD pintos $pintos_dir/pintos
+ADD pintos $pintos_dir
 ADD setup $setup_dir
 
 RUN ls -la $pintos_dir
