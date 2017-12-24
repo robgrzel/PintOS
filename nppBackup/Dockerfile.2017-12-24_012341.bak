@@ -15,7 +15,7 @@ RUN ln /usr/bin/g++34 /usr/bin/g++
 RUN cp -r /usr/lib/x86_64-redhat-linux5E/include/* /usr/local/include/
 
 #write env variables
-ENV setup_dir /setup
+ENV setup_dir /pintos/setup
 ENV pintos_dir /pintos
 
 #create volume that will appear at runtime mounted
