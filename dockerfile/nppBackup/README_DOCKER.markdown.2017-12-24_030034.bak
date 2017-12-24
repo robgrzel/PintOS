@@ -40,6 +40,5 @@ docker rm $(docker ps -a -q)
 #docker run interactive image with /bin/bash
 docker run -it adc7e1e17105 /bin/bash
 
-#build docker image locally
+#first build 
 docker build -t pintos "E:\PintOS\dockerfile\local"
-
