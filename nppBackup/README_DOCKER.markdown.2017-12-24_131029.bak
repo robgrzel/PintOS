@@ -2,10 +2,8 @@
 docker login
 docker tag pintos robgrzel/pintos
 docker push robgrzel/pintos
-#to pull from docker
-docker pull robgrzel/pintos
 docker volume create pintos
-docker run -it --privileged -v pintos:/pintos --name pintos-container robgrzel/pintos /bin/bash
+docker run -it --privileged -v pintos:/pintos --name pintos-container pintos /bin/bash
 #after exit
 docker ps -a 
 docker start -ia pintos 

@@ -90,4 +90,4 @@ RUN localedef -v -c -i en_US -f UTF-8 en_US.UTF-8 || :
 EXPOSE 22
 
 ADD ssh_startup.sh $pintos_dir
-CMD ["/bin/bash", ""$pintos_dir"/ssh_startup.sh"]
+CMD ["/bin/bash", $pintos_dir"/ssh_startup.sh"]
