@@ -8,16 +8,16 @@ MAINTAINER Robert Grzelka <robert.grzelka@outlook.com>
 #this file is meant to build remotely
 ###
 
-#RUN yum install -y compat-gcc-34 compat-gcc-34-c++ \
-#					tar patch ncurses-devel ncurses\
-#					git compat-glibc-headers \
-#					perl gdb libGL SDL libaio alsa-lib\ 
-#					bluez-libs celt051 esound-libs gnutls \
-#					libjpeg-turbo pixman libpng pulseaudio-libs\
-#					spice-server
+RUN yum install -y compat-gcc-34 compat-gcc-34-c++ \
+					tar patch ncurses-devel ncurses\
+					git compat-glibc-headers \
+					perl gdb libGL SDL libaio alsa-lib\ 
+					bluez-libs celt051 esound-libs gnutls \
+					libjpeg-turbo pixman libpng pulseaudio-libs\
+					spice-server
 
-#RUN ln /usr/bin/gcc34 /usr/bin/gcc
-#RUN ln /usr/bin/g++34 /usr/bin/g++
+RUN ln /usr/bin/gcc34 /usr/bin/gcc
+RUN ln /usr/bin/g++34 /usr/bin/g++
 
 RUN cp -r /usr/lib/x86_64-redhat-linux5E/include/* /usr/local/include/			
 			
@@ -35,7 +35,6 @@ RUN mkdir -p $setup_dir
 
 #RUN git clone https://github.com/robgrzel/PintOS /tmp/$pintos_dir
 #RUN mv /tmp/pintos/* $pintos_dir
-RUN ls -la
 RUN mv /PintOS/* $pintos_dir
 
 RUN ls -la $pintos_dir
