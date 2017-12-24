@@ -60,7 +60,6 @@ RUN ls -la $setup_dir
 #RUN mv $pintos_dir/qemu-img-0.15.0-1.el6.rfx.x86_64.rpm  $setup_dir/
 
 RUN chmod -R 777 $setup_dir/pintos/src/misc
-RUN chmod 777 $setup_dir/pintos/src/misc/bochs-2.2.6-build.sh
 RUN SRCDIR=$setup_dir DSTDIR=/usr/ PINTOSDIR=$setup_dir/pintos $setup_dir/pintos/src/misc/bochs-2.2.6-build.sh
 RUN rpm -i $setup_dir/qemu-img-0.15.0-1.el6.rfx.x86_64.rpm
 RUN rpm -i $setup_dir/qemu-0.15.0-1.el6.rfx.x86_64.rpm
@@ -91,5 +90,4 @@ RUN localedef -v -c -i en_US -f UTF-8 en_US.UTF-8 || :
 EXPOSE 22
 
 ADD ssh_startup.sh $pintos_dir
-RUN chmod 777 $pintos_dir/ssh_startup.sh
-CMD ["/bin/bash", $pintos_dir/ssh_startup.sh]
+CMD ["/bin/bash", ""$pintos_dir"/ssh_startup.sh"]
