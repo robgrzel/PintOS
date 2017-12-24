@@ -38,6 +38,9 @@ RUN mkdir -p $setup_dir
 #RUN ls -la
 #RUN mv /PintOS/* $pintos_dir
 
+RUN ls -la $pintos_dir
+RUN ls -la $setup_dir
+
 WORKDIR $setup_dir
 
 ADD pintos-misc $setup_dir/pintos/src/misc/
@@ -45,8 +48,6 @@ ADD pintos-utils $setup_dir/pintos-utils/
 ADD pintos $pintos_dir
 ADD setup $setup_dir
 
-RUN ls -la $pintos_dir
-RUN ls -la $setup_dir
 
 #RUN mv $pintos_dir/bochs-2.2.6.tar.gz $setup_dir/
 #RUN mv $pintos_dir/qemu-0.15.0-1.el6.rfx.x86_64.rpm  $setup_dir/
