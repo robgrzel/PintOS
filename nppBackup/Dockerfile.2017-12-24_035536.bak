@@ -2,6 +2,11 @@ FROM centos:6.6
 MAINTAINER Robert Grzelka <robert.grzelka@outlook.com>
 #BASED ON: https://github.com/yhpark/dockerfile-pintos-kaist
 #...https://github.com/JohnStarich/docker-pintos/blob/master/Dockerfile
+#...https://hub.docker.com/r/hangpark/pintos-dev-env-kaist/
+
+### INFO
+#this file is meant to build remotely
+###
 
 RUN yum install -y compat-gcc-34 compat-gcc-34-c++ \
 					tar patch ncurses-devel ncurses\
@@ -26,19 +31,22 @@ VOLUME [$pintos_dir]
 RUN mkdir -p $pintos_dir
 RUN mkdir -p $setup_dir
 
-RUN echo "######################### COPY GIT PINTOS TO USER #########################"
+#RUN echo "######################### COPY GIT PINTOS TO USER #########################"
 
-RUN git clone https://github.com/robgrzel/PintOS /tmp/$pintos_dir
-
-RUN mv /tmp/pintos/* $pintos_dir
-
-RUN ls -la $pintos_dir
-RUN ls -la $pintos_dir/
+#RUN git clone https://github.com/robgrzel/PintOS /tmp/$pintos_dir
+#RUN mv /tmp/pintos/* $pintos_dir
+#RUN ls -la
+#RUN mv /PintOS/* $pintos_dir
 
 WORKDIR $setup_dir
 
+ADD setup $setup_dir
+ADD pintos $pintos_dir/pintos
 ADD pintos-misc $setup_dir/pintos/src/misc/
 ADD pintos-utils $setup_dir/pintos-utils/
+
+RUN ls -la $pintos_dir
+RUN ls -la $setup_dir
 
 #RUN mv $pintos_dir/bochs-2.2.6.tar.gz $setup_dir/
 #RUN mv $pintos_dir/qemu-0.15.0-1.el6.rfx.x86_64.rpm  $setup_dir/
