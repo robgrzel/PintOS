@@ -37,7 +37,7 @@ ENV pintos_dir /home/pintos
 VOLUME [$pintos_dir]
 
 RUN useradd -m -d $pintos_dir -p pintos -s /bin/bash pintos
-RUN usermod -aG wheel pintos #as ubuntu : sudo adduser pintos sudo
+RUN adduser pintos sudo
 #RUN mkdir -p $pintos_dir
 RUN mkdir -p $setup_dir
 
@@ -71,9 +71,31 @@ WORKDIR $setup_dir/pintos-utils/
 
 RUN make
 
-USER pintos
 WORKDIR $pintos_dir
 
 env PATH $setup_dir/pintos-utils/:$PATH
 
+			
+#################################### SSH SETTINGS ####################################
 
+# Configuring xdm to allow connections from any IP address and ssh to allow X11 Forwarding. 
+RUN sed -i 's/DisplayManager.requestPort/!DisplayManager.requestPort/g' /etc/X11/xdm/xdm-config
+RUN sed -i '/#any host/c\*' /etc/X11/xdm/Xaccess
+RUN ln -s /usr/bin/Xorg /usr/bin/X
+RUN echo X11Forwarding yes >> /etc/ssh/ssh_config
+
+# Fix PAM login issue with sshd
+RUN sed -i 's/session    required     pam_loginuid.so/#session    required     pam_loginuid.so/g' /etc/pam.d/sshd
+
+
+EXPOSE 22
+
+RUN mkdir $pintos_dir/.ssh
+ADD /ssh/ssh_startup.sh $pintos_dir/.ssh/ssh_startup.sh
+RUN chmod -R 777 $pintos_dir/.ssh
+
+RUN ls -la $pintos_dir
+RUN ls -la $pintos_dir/.ssh
+
+
+CMD ["/bin/bash", "/home/pintos/.ssh/ssh_startup.sh"]

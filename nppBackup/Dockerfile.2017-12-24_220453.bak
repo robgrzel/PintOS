@@ -36,9 +36,7 @@ ENV pintos_dir /home/pintos
 #create volume that will appear at runtime mounted
 VOLUME [$pintos_dir]
 
-RUN useradd -m -d $pintos_dir -p pintos -s /bin/bash pintos
-RUN usermod -aG wheel pintos #as ubuntu : sudo adduser pintos sudo
-#RUN mkdir -p $pintos_dir
+RUN mkdir -p $pintos_dir
 RUN mkdir -p $setup_dir
 
 
@@ -61,8 +59,7 @@ RUN ls -la $setup_dir
 #RUN mv $pintos_dir/qemu-0.15.0-1.el6.rfx.x86_64.rpm  $setup_dir/
 #RUN mv $pintos_dir/qemu-img-0.15.0-1.el6.rfx.x86_64.rpm  $setup_dir/
 
-RUN chmod -R 777 $pintos_dir
-
+RUN chmod -R 777 $setup_dir/pintos/src/misc
 RUN SRCDIR=$setup_dir DSTDIR=/usr/ PINTOSDIR=$setup_dir/pintos $setup_dir/pintos/src/misc/bochs-2.2.6-build.sh
 RUN rpm -i $setup_dir/qemu-img-0.15.0-1.el6.rfx.x86_64.rpm
 RUN rpm -i $setup_dir/qemu-0.15.0-1.el6.rfx.x86_64.rpm
@@ -71,9 +68,27 @@ WORKDIR $setup_dir/pintos-utils/
 
 RUN make
 
-USER pintos
 WORKDIR $pintos_dir
 
 env PATH $setup_dir/pintos-utils/:$PATH
 
+			
+#################################### SSH SETTINGS ####################################
 
+# Configuring xdm to allow connections from any IP address and ssh to allow X11 Forwarding. 
+RUN sed -i 's/DisplayManager.requestPort/!DisplayManager.requestPort/g' /etc/X11/xdm/xdm-config
+RUN sed -i '/#any host/c\*' /etc/X11/xdm/Xaccess
+RUN ln -s /usr/bin/Xorg /usr/bin/X
+RUN echo X11Forwarding yes >> /etc/ssh/ssh_config
+
+# Fix PAM login issue with sshd
+RUN sed -i 's/session    required     pam_loginuid.so/#session    required     pam_loginuid.so/g' /etc/pam.d/sshd
+
+# Set locale (fix the locale warnings)
+RUN localedef -v -c -i en_US -f UTF-8 en_US.UTF-8 || :
+
+EXPOSE 22
+
+ADD ssh_startup.sh $pintos_dir/.ssh
+RUN chmod 777 $pintos_dir/.ssh/ssh_startup.sh
+CMD ["/bin/bash", $pintos_dir/.ssh/ssh_startup.sh]
