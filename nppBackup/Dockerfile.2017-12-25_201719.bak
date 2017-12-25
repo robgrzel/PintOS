@@ -57,9 +57,7 @@ ADD setup $setup_dir
 ADD pintos $pintos_dir/pintos
 ADD pintos-misc $setup_dir/pintos/src/misc/
 
-#deal with bug made in here https://registry.hub.docker.com/u/yhpark/pintos-kaist/
-#where as in lab0 to run "pintos -- run alarm-multiple" from dir "pintos/src/threads"
-#you would have to run "../utils/pintos -- run alarm-multiple"...:
+#some overengineering from https://registry.hub.docker.com/u/yhpark/pintos-kaist/
 ADD pintos-utils $setup_dir/pintos-utils/
 #RUN mkdir -p $pintos_dir/pintos/src/utils/
 RUN cp -rn $setup_dir/pintos-utils/* $pintos_dir/pintos/src/utils/

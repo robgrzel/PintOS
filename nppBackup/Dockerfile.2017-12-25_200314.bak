@@ -34,7 +34,7 @@ RUN cp -r /usr/lib/x86_64-redhat-linux5E/include/* /usr/local/include/
 ENV user pintos
 ENV setup_dir /home/pintos/setup
 ENV home_dir /home/pintos
-ENV pintos_dir /home/pintos
+ENV pintos_dir /home/pintos/data
 
 #create volume that will appear at runtime mounted
 VOLUME [$pintos_dir]
@@ -57,12 +57,10 @@ ADD setup $setup_dir
 ADD pintos $pintos_dir/pintos
 ADD pintos-misc $setup_dir/pintos/src/misc/
 
-#deal with bug made in here https://registry.hub.docker.com/u/yhpark/pintos-kaist/
-#where as in lab0 to run "pintos -- run alarm-multiple" from dir "pintos/src/threads"
-#you would have to run "../utils/pintos -- run alarm-multiple"...:
+#some overengineering from https://registry.hub.docker.com/u/yhpark/pintos-kaist/
 ADD pintos-utils $setup_dir/pintos-utils/
-#RUN mkdir -p $pintos_dir/pintos/src/utils/
-RUN cp -rn $setup_dir/pintos-utils/* $pintos_dir/pintos/src/utils/
+RUN mkdir -p $pintos_dir/src/my-utils/
+RUN cp -rf $setup_dir/pintos-utils/* $pintos_dir/src/my-utils/
 
 RUN ls -la $pintos_dir
 RUN ls -la $setup_dir
@@ -73,13 +71,13 @@ RUN SRCDIR=$setup_dir DSTDIR=/usr/ PINTOSDIR=$setup_dir/pintos $setup_dir/pintos
 RUN rpm -i $setup_dir/qemu-img-0.15.0-1.el6.rfx.x86_64.rpm
 RUN rpm -i $setup_dir/qemu-0.15.0-1.el6.rfx.x86_64.rpm
 
-WORKDIR $pintos_dir/pintos/src/utils/
+WORKDIR $pintos_dir/src/my-utils/
 
 RUN make
 
 USER pintos
 WORKDIR $home_dir
 
-env PATH $pintos_dir/pintos/src/utils/:$PATH
+env PATH $pintos_dir/pintos/src/utils:$PATH
 
 

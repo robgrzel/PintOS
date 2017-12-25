@@ -39,4 +39,4 @@ WORKDIR $pintos_dir
 
 VOLUME [$pintos_dir]
 
-env PATH $setup_dir/pintos-utils/:$pintos_dir/pintos/src/utils:$PATH
+env PATH $setup_dir/pintos-utils/:$PATH
