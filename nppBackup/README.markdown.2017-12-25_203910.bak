@@ -1,0 +1,24 @@
+
+```powershell
+# to pull from docker
+docker pull robgrzel/pintos
+docker run -it --privileged --name pintos-container --dns=8.8.8.8 -v E:\PintOS\workspace:/home/pintos/workspace -P robgrzel/pintos /bin/bash
+
+# after exit if want to connect again
+## manually with getting id first
+docker ps -a 
+docker start -ia pintos 
+## or in one line
+docker start -ia (docker ps -a | grep pintos | awk '{print $1;}')
+
+# to remove image or container
+docker rm (docker ps -a | grep pintos | awk '{print $1;}')
+docker rmi (docker ps -a | grep pintos | awk '{print $1;}')
+
+
+# if in dev change, ie. of dockerfile, to push to docker hub
+docker login
+docker tag pintos robgrzel/pintos
+docker push robgrzel/pintos
+
+```

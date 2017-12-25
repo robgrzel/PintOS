@@ -7,7 +7,7 @@
 
 Open powershell as admin (best to work in ie. conemu, simple powershell has bad colors for bash of docker container)
 
-## Step 2
+## Step Next 
 
 Do set shared dir, docker pull and run as in help below. If exit from container,
 connecto to it with start as below. If want to refresh container, remove it and then
@@ -39,15 +39,3 @@ docker tag pintos robgrzel/pintos
 docker push robgrzel/pintos
 
 ```
-
-## Step 3
-
-Do labs...
-
-
-
-# LABS TODO :
-
-Lab0
-Lab1
-Lab2

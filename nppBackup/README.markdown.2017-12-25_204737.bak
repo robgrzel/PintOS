@@ -3,20 +3,10 @@
 ## MADE FOR LABS OF EDA093 IN CHALMERS
 ## BASED ON YHPARK/PINTOS-KAIS
 
-## Step 1
-
-Open powershell as admin (best to work in ie. conemu, simple powershell has bad colors for bash of docker container)
-
-## Step 2
-
-Do set shared dir, docker pull and run as in help below. If exit from container,
-connecto to it with start as below. If want to refresh container, remove it and then
-run again. Its not possible to copy files to shared dir (with -v) during run,
-they had to be copied later (or in smart way I dont know yey)
 
 ```powershell
 #first set directory on host that will be shared with container as workspace
-Set-Variable -Name WSP -Value E:\PintOS\workspace
+WSP=E:\PintOS\workspace
 # to pull from docker
 docker pull robgrzel/pintos
 docker run -it --privileged --name pintos-container --dns=8.8.8.8 -v $WSP:/home/pintos/workspace -P robgrzel/pintos /bin/bash
@@ -39,15 +29,3 @@ docker tag pintos robgrzel/pintos
 docker push robgrzel/pintos
 
 ```
-
-## Step 3
-
-Do labs...
-
-
-
-# LABS TODO :
-
-Lab0
-Lab1
-Lab2
