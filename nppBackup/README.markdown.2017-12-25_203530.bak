@@ -1,4 +1,9 @@
-
+# to push to docker hub
+```powershell
+docker login
+docker tag pintos robgrzel/pintos
+docker push robgrzel/pintos
+```
 # to pull from docker
 ```powershell
 docker pull robgrzel/pintos
@@ -20,11 +25,4 @@ docker start -ia (docker ps -a | grep pintos | awk '{print $1;}')
 ```powershell
 docker rm (docker ps -a | grep pintos | awk '{print $1;}')
 docker rmi (docker ps -a | grep pintos | awk '{print $1;}')
-```
-
-# if in dev change, ie. of dockerfile, to push to docker hub
-```powershell
-docker login
-docker tag pintos robgrzel/pintos
-docker push robgrzel/pintos
 ```
