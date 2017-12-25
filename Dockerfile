@@ -8,6 +8,7 @@ MAINTAINER Robert Grzelka <robert.grzelka@outlook.com>
 #this file is meant to build remotely
 ###
 
+
 RUN yum install -y compat-gcc-34 compat-gcc-34-c++ \
 					tar patch ncurses-devel ncurses\
 					git compat-glibc-headers \
@@ -25,18 +26,20 @@ RUN ln /usr/bin/g++34 /usr/bin/g++
 
 RUN cp -r /usr/lib/x86_64-redhat-linux5E/include/* /usr/local/include/			
 			
-ENV user pintos
 
 #################################### PINTOS SETTINGS #########################
 
+
 #write env variables
+ENV user pintos
 ENV setup_dir /home/pintos/setup
 ENV pintos_dir /home/pintos
 
 #create volume that will appear at runtime mounted
 VOLUME [$pintos_dir]
 
-RUN useradd -m -d $pintos_dir -p pintos -s /bin/bash pintos
+RUN useradd -m -d $pintos_dir -s /bin/bash pintos
+RUN echo -e '1\n1' | passwd pintos --stdin
 RUN usermod -aG wheel pintos #as ubuntu : sudo adduser pintos sudo
 #RUN mkdir -p $pintos_dir
 RUN mkdir -p $setup_dir
