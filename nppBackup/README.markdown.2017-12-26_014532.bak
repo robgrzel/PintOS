@@ -68,7 +68,9 @@ cd pintos/src/threads
 make
 pintos -- run alarm-multiple
 #to redirect output to log we do:
-pintos -- -q run alarm-multiple &> $HOME/workspace/EDA093_CODE/Labs/Lab0/run_alarm-multiple.pintos.log
+... i dont know yet how to with bosh
+... ie. pintos -- run... &> mylog.txt do not work
+... so we have to copy by hand
 ```
 and we should get:
 
