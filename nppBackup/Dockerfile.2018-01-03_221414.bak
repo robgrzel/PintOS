@@ -1,0 +1,122 @@
+FROM ubuntu:12.04
+
+MAINTAINER Robert Grzelka <robert.grzelka@outlook.com>
+#BASED ON: https://github.com/yhpark/dockerfile-pintos-kaist
+#...https://github.com/JohnStarich/docker-pintos/blob/master/Dockerfile
+#...https://hub.docker.com/r/hangpark/pintos-dev-env-kaist/
+#
+
+### INFO
+#this file is meant to build remotely
+###
+
+
+RUN /bin/bash echo -e """\n
+deb     http://snapshot.debian.org/archive/debian/20070730T000000Z/ lenny main
+deb-src http://snapshot.debian.org/archive/debian/20070730T000000Z/ lenny main
+deb     http://snapshot.debian.org/archive/debian-security/20070730T000000Z/ lenny/updates main
+deb-src http://snapshot.debian.org/archive/debian-security/20070730T000000Z/ lenny/updates main
+""" >> /etc/apt/sources.list
+
+RUN apt-get update && \
+DEBIAN_FRONTEND=noninterative \
+apt-get install -y \
+	coreutils manpages-dev \
+	xorg openbox ncurses-dev \
+	wget vim emacs gcc clang make \
+	gdb ddd qemu nano rpm \ 
+	openssh-server cmake gcc build-essential \
+	vim python tcpdump telnet byacc firefox \
+	flex iproute2 gdbserver less bison valgrind \
+	gcc-3.4 gcc-3.4-c++ g++-3.4 tar patch git perl gdb \ 
+	bluez-libs xpra rox-filer openssh-server \
+	pwgen xserver-xephyr xdm fluxbox xvfb sudo \
+	firefox xterm
+	
+# Clean up apt-get's files
+RUN apt-get clean autoclean && \
+    rm -rf /var/lib/apt/* /var/lib/cache/* /var/lib/log/*
+
+	
+#setup ssh
+
+RUN mkdir /var/run/sshd
+RUN echo 'root:root' | chpasswd
+RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+# SSH login fix. Otherwise user is kicked off after login
+RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+
+ENV NOTVISIBLE "in users profile"
+RUN echo "export VISIBLE=now" >> /etc/profile
+
+EXPOSE 22 9999 7777
+			
+#################################### PINTOS SETTINGS #########################
+
+env PATH $pintos_dir/pintos/src/utils/:$PATH
+
+
+#write env variables
+ENV user pintos
+ENV setup_dir /home/pintos/setup
+ENV home_dir /home/pintos
+ENV pintos_dir /home/pintos
+
+#create volume that will appear at runtime mounted
+VOLUME [$pintos_dir]
+
+RUN useradd -m -d $home_dir -s /bin/bash pintos
+
+##centos
+#RUN echo -e '1\n1' | passwd pintos --stdin
+#RUN usermod -aG wheel pintos
+##ubuntu
+RUN adduser pintos sudo
+RUN /bin/bash -c "echo -e '1\n1' | passwd pintos"
+##
+
+RUN mkdir -p $pintos_dir
+RUN mkdir -p $setup_dir
+
+
+#setup pintos
+
+
+WORKDIR $setup_dir
+
+ADD setup $setup_dir
+ADD pintos $pintos_dir/pintos
+ADD pintos-misc $setup_dir/pintos/src/misc/
+
+#deal with bug made in here https://registry.hub.docker.com/u/yhpark/pintos-kaist/
+#where as in lab0 to run "pintos -- run alarm-multiple" from dir "pintos/src/threads"
+#you would have to run "../utils/pintos -- run alarm-multiple"...:
+ADD pintos-utils $setup_dir/pintos-utils/
+#RUN mkdir -p $pintos_dir/pintos/src/utils/
+RUN cp -rn $setup_dir/pintos-utils/* $pintos_dir/pintos/src/utils/
+
+RUN ls -la $pintos_dir
+RUN ls -la $setup_dir
+
+RUN chmod -R 777 $pintos_dir
+
+RUN SRCDIR=$setup_dir DSTDIR=/usr/ PINTOSDIR=$setup_dir/pintos $setup_dir/pintos/src/misc/bochs-2.2.6-build.sh
+RUN rpm -i $setup_dir/qemu-img-0.15.0-1.el6.rfx.x86_64.rpm
+RUN rpm -i $setup_dir/qemu-0.15.0-1.el6.rfx.x86_64.rpm
+
+WORKDIR $pintos_dir/pintos/src/utils/
+
+RUN make
+
+#USER pintos
+#WORKDIR $home_dir
+
+## Compile Pintos kernel
+RUN cd /pintos/src/threads && make
+
+
+USER root
+WORKDIR /
+
+CMD ["/usr/sbin/sshd", "-D"]

@@ -1,85 +1,115 @@
-FROM centos:6.6
+From ds82/ubuntu-i386:8.04
+
 MAINTAINER Robert Grzelka <robert.grzelka@outlook.com>
 #BASED ON: https://github.com/yhpark/dockerfile-pintos-kaist
 #...https://github.com/JohnStarich/docker-pintos/blob/master/Dockerfile
 #...https://hub.docker.com/r/hangpark/pintos-dev-env-kaist/
 
+#run it with:
+#docker run -itd -p 3522:22 -p 7575:7575 -p 9595:9595 -h localhost --privileged --security-opt seccomp:unconfined -e DISPLAY=$DISPLAY --name pintos-container --dns=8.8.8.8 -v  E:\PintOS\workspace:/home/pintos/workspace -P ubuntu-pintos-ssh 
+
+#docker run -itd -p 3522:22 -p 7575:7575 -p 9595:9595 -h localhost --privileged --security-opt seccomp:unconfined -e DISPLAY=$DISPLAY --name pintos-container --dns=8.8.8.8 -v  E:\PintOS\pintos\src:/pintos/src -P pintos-docker 
+
+
 ### INFO
 #this file is meant to build remotely
 ###
 
+WORKDIR /
 
-RUN yum install -y compat-gcc-34 compat-gcc-34-c++ \
-					tar patch ncurses-devel ncurses\
-					git compat-glibc-headers \
-					perl gdb libGL SDL libaio alsa-lib\ 
-					bluez-libs celt051 esound-libs gnutls \
-					libjpeg-turbo pixman libpng pulseaudio-libs\
-					spice-server xpra rox-filer openssh-server \
-					pwgen xserver-xephyr xdm fluxbox xvfb sudo \
-					firefox xterm
+RUN apt-get install -y \ 
+wget gcc-3.4-base gcc-3.4 g++-3.4 gdb \ 
+libncursesw5 libncurses5-dev libexpat1-dev \ 
+make xorg-dev gcc-4.2 libglib2.0-dev \
+openssh-server cmake gcc build-essential \
+vim python tcpdump telnet byacc flex iproute\
+ gdb less bison valgrind firefox
+
+RUN apt-get clean 
+
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-3.4 20 \ 
+	&& update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.2 10 \
+	&& update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-3.4 20
 
 
-					
-RUN ln /usr/bin/gcc34 /usr/bin/gcc
-RUN ln /usr/bin/g++34 /usr/bin/g++
 
-RUN cp -r /usr/lib/x86_64-redhat-linux5E/include/* /usr/local/include/			
+#################################### ssh SETTINGS #########################
+
+RUN mkdir -p /var/run/sshd ; chmod -rx /var/run/sshd
+RUN echo 'root:root' | chpasswd
+RUN ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key -y
+RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+#RUN sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+RUN sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config
+RUN sed -ri 's/#UsePAM no/UsePAM no/g' /etc/ssh/sshd_config
+
+# SSH login fix. Otherwise user is kicked off after login
+RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+
+
+ENV NOTVISIBLE "in users profile"
+RUN echo "export VISIBLE=now" >> /etc/profile
+
+RUN  /etc/init.d/ssh start
+
+
+EXPOSE 22 9595 7575 1234
 			
-
 #################################### PINTOS SETTINGS #########################
 
 
 #write env variables
-ENV user pintos
-ENV setup_dir /home/pintos/setup
-ENV home_dir /home/pintos
-ENV pintos_dir /home/pintos
+ENV setup_dir /pintos/setup
+ENV pintos_dir /pintos
 
 #create volume that will appear at runtime mounted
 VOLUME [$pintos_dir]
 
-RUN useradd -m -d $home_dir -s /bin/bash pintos
-RUN echo -e '1\n1' | passwd pintos --stdin
-RUN usermod -aG wheel pintos #as ubuntu : sudo adduser pintos sudo
 RUN mkdir -p $pintos_dir
 RUN mkdir -p $setup_dir
 
-#if clone from github
-#RUN git clone https://github.com/robgrzel/PintOS /tmp/$pintos_dir
-#RUN mv /tmp/pintos/* $pintos_dir
-#RUN ls -la
-#RUN mv /PintOS/* $pintos_dir
 
 WORKDIR $setup_dir
 
 ADD setup $setup_dir
 ADD pintos $pintos_dir/pintos
-ADD pintos-misc $setup_dir/pintos/src/misc/
+ADD pintos-misc /pintos/pintos/src/misc/
+ADD pintos-utils /pintos/pintos-utils/
 
-#deal with bug made in here https://registry.hub.docker.com/u/yhpark/pintos-kaist/
-#where as in lab0 to run "pintos -- run alarm-multiple" from dir "pintos/src/threads"
-#you would have to run "../utils/pintos -- run alarm-multiple"...:
-ADD pintos-utils $setup_dir/pintos-utils/
-#RUN mkdir -p $pintos_dir/pintos/src/utils/
-RUN cp -rn $setup_dir/pintos-utils/* $pintos_dir/pintos/src/utils/
+RUN cp -r /pintos/pintos-utils/* /pintos/pintos/src/utils/
 
 RUN ls -la $pintos_dir
 RUN ls -la $setup_dir
 
 RUN chmod -R 777 $pintos_dir
 
-RUN SRCDIR=$setup_dir DSTDIR=/usr/ PINTOSDIR=$setup_dir/pintos $setup_dir/pintos/src/misc/bochs-2.2.6-build.sh
-RUN rpm -i $setup_dir/qemu-img-0.15.0-1.el6.rfx.x86_64.rpm
-RUN rpm -i $setup_dir/qemu-0.15.0-1.el6.rfx.x86_64.rpm
+RUN env SRCDIR=/pintos/setup PINTOSDIR=/pintos/pintos/ DSTDIR=/usr/local/ \
+ /bin/bash /pintos/pintos/src/misc/bochs-2.2.6-build.sh
 
-WORKDIR $pintos_dir/pintos/src/utils/
+#RUN rpm -i $setup_dir/qemu-img-0.15.0-1.el6.rfx.x86_64.rpm
+#RUN rpm -i $setup_dir/qemu-0.15.0-1.el6.rfx.x86_64.rpm
 
-RUN make
 
-USER pintos
-WORKDIR $home_dir
 
-env PATH $pintos_dir/pintos/src/utils/:$PATH
+RUN update-alternatives --set gcc /usr/bin/gcc-4.2 
 
+RUN cd $setup_dir && tar xzf qemu-0.15.0.tar.gz && \
+cd qemu-0.15.0 && ./configure --target-list=i386-softmmu \ 
+&& make install 
+
+RUN update-alternatives --set gcc /usr/bin/gcc-3.4 
+
+USER root
+WORKDIR /root
+
+#this is only temporary variable
+env PATH /pintos/pintos/src/utils/:$PATH
+
+RUN echo export PATH=$PATH:/pintos/pintos/src/utils >> .profile
+RUN echo export PATH=$PATH:/pintos/pintos/src/utils >> .bashrc
+
+WORKDIR /pintos
+
+CMD ["/usr/sbin/sshd", "-D"]
 

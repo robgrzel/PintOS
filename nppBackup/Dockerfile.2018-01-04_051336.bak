@@ -1,0 +1,108 @@
+From ds82/ubuntu-i386:8.04
+
+MAINTAINER Robert Grzelka <robert.grzelka@outlook.com>
+#BASED ON: https://github.com/yhpark/dockerfile-pintos-kaist
+#...https://github.com/JohnStarich/docker-pintos/blob/master/Dockerfile
+#...https://hub.docker.com/r/hangpark/pintos-dev-env-kaist/
+
+#run it with:
+#docker run -itd -p 3522:22 -p 7575:7575 -p 9595:9595 -h localhost --privileged --security-opt seccomp:unconfined -e DISPLAY=$DISPLAY --name pintos-container --dns=8.8.8.8 -v  E:\PintOS\workspace:/home/pintos/workspace -P ubuntu-pintos-ssh 
+
+#docker run -itd -p 3522:22 -p 7575:7575 -p 9595:9595 -h localhost --privileged --security-opt seccomp:unconfined -e DISPLAY=$DISPLAY --name pintos-container --dns=8.8.8.8 -v  E:\PintOS\workspace:/home/pintos/workspace -P pintos-ssh 
+
+
+### INFO
+#this file is meant to build remotely
+###
+
+WORKDIR /
+
+RUN apt-get install -y \ 
+wget gcc-3.4-base gcc-3.4 g++-3.4 gdb \ 
+libncursesw5 libncurses5-dev libexpat1-dev \ 
+make xorg-dev gcc-4.2 libglib2.0-dev \
+openssh-server cmake gcc build-essential \
+vim python tcpdump telnet byacc flex iproute2\
+ gdbserver less bison valgrind firefox
+
+RUN apt-get clean 
+
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-3.4 20 \ 
+	&& update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.2 10 \
+	&& update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-3.4 20
+
+
+
+#################################### ssh SETTINGS #########################
+
+RUN mkdir -p /var/run/sshd ; chmod -rx /var/run/sshd
+RUN echo 'root:root' | chpasswd
+RUN ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
+RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+#RUN sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+RUN sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config
+RUN sed -ri 's/#UsePAM no/UsePAM no/g' /etc/ssh/sshd_config
+
+# SSH login fix. Otherwise user is kicked off after login
+RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+
+
+ENV NOTVISIBLE "in users profile"
+RUN echo "export VISIBLE=now" >> /etc/profile
+
+RUN  /etc/init.d/sshd start
+
+
+EXPOSE 22 9595 7575
+			
+#################################### PINTOS SETTINGS #########################
+
+
+#write env variables
+ENV setup_dir /pintos/setup
+ENV pintos_dir /pintos
+
+#create volume that will appear at runtime mounted
+VOLUME [$pintos_dir]
+
+RUN mkdir -p $pintos_dir
+RUN mkdir -p $setup_dir
+
+
+WORKDIR $setup_dir
+
+ADD setup $setup_dir
+ADD pintos $pintos_dir/pintos
+
+
+RUN ls -la $pintos_dir
+RUN ls -la $setup_dir
+
+RUN chmod -R 777 $pintos_dir
+
+RUN env SRCDIR=/ PINTOSDIR=/pintos/ DSTDIR=/usr/local/ \ sh /pintos/src/misc/bochs-2.2.6-build.sh
+
+RUN rpm -i $setup_dir/qemu-img-0.15.0-1.el6.rfx.x86_64.rpm
+RUN rpm -i $setup_dir/qemu-0.15.0-1.el6.rfx.x86_64.rpm
+
+RUN cd $setup_dir && tar xzf qemu-0.15.0.tar.gz && cd qemu-0.15.0 
+RUN update-alternatives --set gcc /usr/bin/gcc-4.2 \ 
+&& ./configure --target-list=i386-softmmu \ 
+&& make install 
+
+RUN update-alternatives --set gcc /usr/bin/gcc-3.4 \ 
+
+USER rootP
+WORKDIR /pintos
+
+#this is only temporary variable
+env PATH /pintos/src/utils/:$PATH
+
+RUN echo export PATH=$PATH:/pintos/src/utils >> .profile
+RUN echo export PATH=$PATH:/pintos/src/utils >> .bashrc
+
+
+
+CMD ["/usr/sbin/sshd", "-D"]
+
