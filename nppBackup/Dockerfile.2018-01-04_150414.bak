@@ -56,8 +56,8 @@ RUN  /etc/init.d/ssh start
 
 EXPOSE 22 9595 7575 1234
 			
+#################################### PINTOS SETTINGS #########################
 ################################################################################
-#### PINTOS SETTINGS
 ################################################################################
 
 
@@ -123,14 +123,11 @@ WORKDIR /pintos
 CMD ["/usr/sbin/sshd", "-D"]
 
 ################################################################################
-####NOTES
 ################################################################################
 
 #BASED ON: https://github.com/yhpark/dockerfile-pintos-kaist
 #...https://github.com/JohnStarich/docker-pintos/blob/master/Dockerfile
 #...https://hub.docker.com/r/hangpark/pintos-dev-env-kaist/
 
-#build locally with:
-
 #run with
-#docker run -itd -p 3522:22 -p 7575:7575 -p 9595:9595 -p 1234:1234 -h localhost --privileged --security-opt seccomp:unconfined -e DISPLAY=$DISPLAY --name pintos-container --dns=8.8.8.8 -v  E:\PintOS\pintos\src:/pintos/pintos/src -P pintos-docker
+#docker run -itd -p 3522:22 -p 7575:7575 -p 9595:9595 -p 1234:1234 -h localhost --privileged --security-opt seccomp:unconfined -e DISPLAY=$DISPLAY --name pintos-container --dns=8.8.8.8 -v  E:\PintOS\pintos\src:$pintos_src -P pintos-docker

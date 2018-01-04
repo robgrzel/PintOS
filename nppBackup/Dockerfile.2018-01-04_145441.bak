@@ -1,6 +1,9 @@
 From ds82/ubuntu-i386:8.04
 
 MAINTAINER Robert Grzelka <robert.grzelka@outlook.com>
+#BASED ON: https://github.com/yhpark/dockerfile-pintos-kaist
+#...https://github.com/JohnStarich/docker-pintos/blob/master/Dockerfile
+#...https://hub.docker.com/r/hangpark/pintos-dev-env-kaist/
 
 #run it with:
 #docker run -itd -p 3522:22 -p 7575:7575 -p 9595:9595 -h localhost --privileged --security-opt seccomp:unconfined -e DISPLAY=$DISPLAY --name pintos-container --dns=8.8.8.8 -v  E:\PintOS\workspace:/home/pintos/workspace -P ubuntu-pintos-ssh 
@@ -8,10 +11,9 @@ MAINTAINER Robert Grzelka <robert.grzelka@outlook.com>
 #docker run -itd -p 3522:22 -p 7575:7575 -p 9595:9595 -h localhost --privileged --security-opt seccomp:unconfined -e DISPLAY=$DISPLAY --name pintos-container --dns=8.8.8.8 -v  E:\PintOS\pintos\src:/pintos/src -P pintos-docker 
 
 
-################################################################################
-####INFO : this file is meant to build remotely
-################################################################################
-
+### INFO
+#this file is meant to build remotely
+###
 
 WORKDIR /
 
@@ -31,9 +33,7 @@ RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-3.4 20 \
 
 
 
-################################################################################
-####ssh SETTINGS
-################################################################################
+#################################### ssh SETTINGS #########################
 
 RUN mkdir -p /var/run/sshd ; chmod -rx /var/run/sshd
 RUN echo 'root:root' | chpasswd
@@ -56,41 +56,36 @@ RUN  /etc/init.d/ssh start
 
 EXPOSE 22 9595 7575 1234
 			
-################################################################################
-#### PINTOS SETTINGS
-################################################################################
+#################################### PINTOS SETTINGS #########################
 
 
 #write env variables
 ENV setup_dir /pintos/setup
 ENV pintos_dir /pintos
-ENV pintos_src /pintos/pintos/src
 
 #create volume that will appear at runtime mounted
 VOLUME [$pintos_dir]
 
 RUN mkdir -p $pintos_dir
 RUN mkdir -p $setup_dir
-RUN mkdir -p $pintos_src
+
 
 WORKDIR $setup_dir
 
 ADD setup $setup_dir
 ADD pintos $pintos_dir/pintos
-ADD pintos-misc $pintos_src/misc/
-ADD pintos-utils $pintos_dir/pintos-utils/
+ADD pintos-misc /pintos/pintos/src/misc/
+ADD pintos-utils /pintos/pintos-utils/
 
-RUN cp -r $pintos_dir/pintos-utils/* $pintos_src/utils/
+RUN cp -r /pintos/pintos-utils/* /pintos/pintos/src/utils/
 
 RUN ls -la $pintos_dir
 RUN ls -la $setup_dir
 
 RUN chmod -R 777 $pintos_dir
 
-RUN env SRCDIR=$setup_dir \
-PINTOSDIR=$pintos_dir/pintos/ \
-DSTDIR=/usr/local/ \
-/bin/bash $pintos_src/misc/bochs-2.2.6-build.sh
+RUN env SRCDIR=/pintos/setup PINTOSDIR=/pintos/pintos/ DSTDIR=/usr/local/ \
+ /bin/bash /pintos/pintos/src/misc/bochs-2.2.6-build.sh
 
 #RUN rpm -i $setup_dir/qemu-img-0.15.0-1.el6.rfx.x86_64.rpm
 #RUN rpm -i $setup_dir/qemu-0.15.0-1.el6.rfx.x86_64.rpm
@@ -109,28 +104,12 @@ USER root
 WORKDIR /root
 
 #this is only temporary variable
-env PATH $pintos_src/utils/:$PATH
+env PATH /pintos/pintos/src/utils/:$PATH
 
-RUN echo export PATH=$PATH:$pintos_src/utils >> .profile
-RUN echo export PATH=$PATH:$pintos_src/utils >> .bashrc
-
-WORKDIR $pintos_src/utils/
-
-RUN make
+RUN echo export PATH=$PATH:/pintos/pintos/src/utils >> .profile
+RUN echo export PATH=$PATH:/pintos/pintos/src/utils >> .bashrc
 
 WORKDIR /pintos
 
 CMD ["/usr/sbin/sshd", "-D"]
 
-################################################################################
-####NOTES
-################################################################################
-
-#BASED ON: https://github.com/yhpark/dockerfile-pintos-kaist
-#...https://github.com/JohnStarich/docker-pintos/blob/master/Dockerfile
-#...https://hub.docker.com/r/hangpark/pintos-dev-env-kaist/
-
-#build locally with:
-
-#run with
-#docker run -itd -p 3522:22 -p 7575:7575 -p 9595:9595 -p 1234:1234 -h localhost --privileged --security-opt seccomp:unconfined -e DISPLAY=$DISPLAY --name pintos-container --dns=8.8.8.8 -v  E:\PintOS\pintos\src:/pintos/pintos/src -P pintos-docker
