@@ -133,13 +133,13 @@ CMD ["/usr/sbin/sshd", "-D"]
 ## go to powershell admin
 
 ##build locally with:
-#docker build -t docker-pintos E:\Docker-Containers\docker-pintos
+#docker build -t pintos-docker E:\PintOS
 
 ##set display with:
 # set-variable -name DISPLAY -value 192.168.1.103:0.0
 
 ##run with:
-#docker run -itd -p 3522:22 -p 7575:7575 -p 9595:9595 -p 1234:1234 -h pintos --privileged --security-opt seccomp:unconfined -e DISPLAY=$DISPLAY --name pintos-container --dns=8.8.8.8 -v  E:\PintOS\pintos\src:/pintos/pintos/src -P docker-pintos
+#docker run -itd -p 3522:22 -p 7575:7575 -p 9595:9595 -p 1234:1234 -h localhost --privileged --security-opt seccomp:unconfined -e DISPLAY=$DISPLAY --name pintos-container --dns=8.8.8.8 -v  E:\PintOS\pintos\src:/pintos/pintos/src -P pintos-docker
 
 ##connect by ssh
 #ssh -X -p 3122 mininet@127.0.0.1
