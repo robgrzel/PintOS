@@ -1,4 +1,4 @@
-1FROM centos:6.6
+FROM centos:6.6
 MAINTAINER Robert Grzelka <robert.grzelka@outlook.com>
 #BASED ON: https://github.com/yhpark/dockerfile-pintos-kaist
 #...https://github.com/JohnStarich/docker-pintos/blob/master/Dockerfile

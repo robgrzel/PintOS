@@ -30,7 +30,7 @@
 00000000000i[     ]   SB16 support: no
 00000000000i[     ]   USB support: no
 00000000000i[     ]   VGA extension support:  
-00000000000i[MEM0 ] allocated memory at 0xf6ebe008. after alignment, vector=0xf6ebf000
+00000000000i[MEM0 ] allocated memory at 0xf703c008. after alignment, vector=0xf703d000
 00000000000i[MEM0 ] 4.00MB
 00000000000i[MEM0 ] rom at 0xf0000/65536 ('/usr/local//share/bochs/BIOS-bochs-latest')
 00000000000i[MEM0 ] rom at 0xc0000/32768 ('/usr/local//share/bochs/VGABIOS-lgpl-latest')
@@ -46,7 +46,7 @@
 00000000000i[     ] init_mem of 'extfpuirq' plugin device by virtual method
 00000000000i[     ] init_mem of 'speaker' plugin device by virtual method
 00000000000i[     ] init_dev of 'harddrv' plugin device by virtual method
-00000000000i[HD   ] HD on ata0-0: '/tmp/HpBn444IYQ.dsk' 'flat' mode 
+00000000000i[HD   ] HD on ata0-0: '/tmp/4NzFhPrQXo.dsk' 'flat' mode 
 00000000000i[HD   ] Using boot sequence disk, none, none
 00000000000i[HD   ] Floppy boot signature check is enabled
 00000000000i[     ] init_dev of 'keyboard' plugin device by virtual method
@@ -64,9 +64,6 @@
 00000000000i[     ] reset of 'parallel' plugin device by virtual method
 00000000000i[     ] reset of 'extfpuirq' plugin device by virtual method
 00000000000i[     ] reset of 'speaker' plugin device by virtual method
-00000000000i[     ] addr fff0 len 0
-00000000000i[     ] addr fff0 len 0
-00000000000i[     ] setting breakpoint at c0100000
 00000003740i[BIOS ] $Revision: 1.160 $ $Date: 2006/01/25 17:51:49 $
 00000317563i[KBD  ] reset-disable command received
 00000425250i[VBIOS] VGABios $Id: vgabios.c,v 1.63 2005/12/26 19:50:26 vruppert Exp $
@@ -75,26 +72,3 @@
 00000786523e[HD   ] ata0: device set to 1 which does not exist
 00000786815e[HD   ] ata1: device set to 0 which does not exist
 00000787108e[HD   ] ata1: device set to 1 which does not exist
-00000919151i[     ] found breakpoint at c0100000
-00000919151i[     ] stopped with ac1
-00000919151i[     ] reg 8 set to c0100000
-00000919151i[     ] reg 41 set to ffffffff
-00000919151i[     ] Removing breakpoint at c0100000
-00000919151i[     ] stepping
-00000919152i[     ] stopped with ac2
-00000919152i[     ] setting breakpoint at c0100000
-00299838532i[     ] Got byte 3
-00299838532i[     ] stopped with ac3
-00299838532i[     ] Removing breakpoint at c0100000
-00299838532i[     ] addr c010e0d4 len 0
-00299838532i[     ] addr c010e0dc len 0
-00299838532i[     ] addr c010e0e4 len 0
-00299838532i[     ] addr c010e0ec len 0
-00299838532i[     ] addr c010c838 len 0
-00299838532i[     ] addr c010c840 len 0
-00299838532p[     ] >>PANIC<< Debugger asked us to quit
-
-00299838532i[SYS  ] Last time is 299
-00299838532i[NGUI ] bx_nogui_gui_c::exit() not implemented yet.
-00299838532i[     ] restoring default signal behavior
-00299838532i[CTRL ] quit_sim called with exit code 1
