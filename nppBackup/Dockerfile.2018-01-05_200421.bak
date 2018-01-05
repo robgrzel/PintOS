@@ -2,6 +2,11 @@ From ds82/ubuntu-i386:8.04
 
 MAINTAINER Robert Grzelka <robert.grzelka@outlook.com>
 
+#run it with:
+#docker run -itd -p 3522:22 -p 7575:7575 -p 9595:9595 -h localhost --privileged --security-opt seccomp:unconfined -e DISPLAY=$DISPLAY --name pintos-container --dns=8.8.8.8 -v  E:\PintOS\workspace:/home/pintos/workspace -P ubuntu-pintos-ssh 
+
+#docker run -itd -p 3522:22 -p 7575:7575 -p 9595:9595 -h localhost --privileged --security-opt seccomp:unconfined -e DISPLAY=$DISPLAY --name pintos-container --dns=8.8.8.8 -v  E:\PintOS\pintos\src:/pintos/src -P pintos-docker 
+
 
 ################################################################################
 ####INFO : this file is meant to build remotely
@@ -117,3 +122,24 @@ WORKDIR /pintos
 
 CMD ["/usr/sbin/sshd", "-D"]
 
+################################################################################
+####NOTES
+################################################################################
+
+#BASED ON: https://github.com/yhpark/dockerfile-pintos-kaist
+#...https://github.com/JohnStarich/docker-pintos/blob/master/Dockerfile
+#...https://hub.docker.com/r/hangpark/pintos-dev-env-kaist/
+
+## go to powershell admin
+
+##build locally with:
+#docker build -t docker-pintos E:\Docker-Containers\docker-pintos
+
+##set display with:
+# set-variable -name DISPLAY -value 192.168.1.103:0.0
+
+##run with:
+#docker run -itd -p 3522:22 -p 7575:7575 -p 9595:9595 -p 1234:1234 -h pintos --privileged --security-opt seccomp:unconfined -e DISPLAY=$DISPLAY --name pintos-container --dns=8.8.8.8 -v  E:\PintOS\pintos\src:/pintos/pintos/src -P docker-pintos
+
+##connect by ssh
+#ssh -X -p 3122 mininet@127.0.0.1

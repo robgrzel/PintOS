@@ -2,6 +2,11 @@ From ds82/ubuntu-i386:8.04
 
 MAINTAINER Robert Grzelka <robert.grzelka@outlook.com>
 
+#run it with:
+#docker run -itd -p 3522:22 -p 7575:7575 -p 9595:9595 -h localhost --privileged --security-opt seccomp:unconfined -e DISPLAY=$DISPLAY --name pintos-container --dns=8.8.8.8 -v  E:\PintOS\workspace:/home/pintos/workspace -P ubuntu-pintos-ssh 
+
+#docker run -itd -p 3522:22 -p 7575:7575 -p 9595:9595 -h localhost --privileged --security-opt seccomp:unconfined -e DISPLAY=$DISPLAY --name pintos-container --dns=8.8.8.8 -v  E:\PintOS\pintos\src:/pintos/src -P pintos-docker 
+
 
 ################################################################################
 ####INFO : this file is meant to build remotely

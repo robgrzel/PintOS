@@ -26,8 +26,6 @@ set-variable -name DISPLAY -value 192.168.1.103:0.0
 ##run with:
 #docker run -itd -p 3522:22 -p 7575:7575 -p 9595:9595 -p 1234:1234 -h pintos --privileged --security-opt seccomp:unconfined -e DISPLAY=$DISPLAY --name pintos-container --dns=8.8.8.8 -v  E:\PintOS\pintos\src:/pintos/pintos/src -P docker-pintos
 
-
-
 ##connect by ssh
 ssh -X -p 3522 pintos@127.0.0.1
 
@@ -37,7 +35,12 @@ export DISPLAY=192.168.1.103:0.0
 firefox 
 
 
-#OLD
+## Step 2 (to be modified)
+
+Do set shared dir, docker pull and run as in help below. If exit from container,
+connecto to it with start as below. If want to refresh container, remove it and then
+run again. Its not possible to copy files to shared dir (with -v) during run,
+they had to be copied later (or in smart way I dont know yey)
 
 ```powershell
 #first set directory on host that will be shared with container as workspace
